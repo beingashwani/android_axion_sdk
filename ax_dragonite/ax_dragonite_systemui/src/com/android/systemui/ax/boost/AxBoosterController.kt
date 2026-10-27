@@ -43,6 +43,8 @@ class AxBoosterController @Inject constructor(@Main private val mainHandler: Han
         private const val DURATION_ANIMATION_MS = 5000
         private const val KEYGUARD_GONE_RELEASE_DELAY_MS = 800L
         private const val PACKAGE_SYSTEMUI = "com.android.systemui"
+        private const val SHADE_REASON_TRACKING = "tracking"
+        private const val SHADE_REASON_EXPANDING = "expanding"
     }
 
     private val isBoostingMap = ConcurrentHashMap<Int, Boolean>()
@@ -79,6 +81,18 @@ class AxBoosterController @Inject constructor(@Main private val mainHandler: Han
             }
         }
     }
+
+    private val shadeReasons = HashSet<String>()
+
+    private fun setShadeBoost(reason: String, boosting: Boolean) =
+        synchronized(shadeReasons) {
+            if (boosting) shadeReasons.add(reason) else shadeReasons.remove(reason)
+            setBoosting(
+                BOOST_SCENE_ID_NOTIFICATION_EXPAND,
+                shadeReasons.isNotEmpty(),
+                "shade:$reason",
+            )
+        }
 
     fun isBoosting(sceneId: Int): Boolean = isBoostingMap[sceneId] == true
 
@@ -174,9 +188,9 @@ class AxBoosterController @Inject constructor(@Main private val mainHandler: Han
 
     fun releaseNPVFlingBoost() = releaseAnimationBoost()
 
-    fun acquireNPVTrackingBoost() = acquireAnimationBoost()
+    fun acquireNPVTrackingBoost() = setShadeBoost(SHADE_REASON_TRACKING, true)
 
-    fun releaseNPVTrackingBoost() = releaseAnimationBoost()
+    fun releaseNPVTrackingBoost() = setShadeBoost(SHADE_REASON_TRACKING, false)
 
     fun acquireSwipeDownNotificationBoost() = acquireAnimationBoost()
 
@@ -186,9 +200,9 @@ class AxBoosterController @Inject constructor(@Main private val mainHandler: Han
 
     fun releaseSpeedUpNPVExpanded() = releaseAnimationBoost()
 
-    fun acquireNPVExpandingBoost() = acquireNotificationExpandBoost()
+    fun acquireNPVExpandingBoost() = setShadeBoost(SHADE_REASON_EXPANDING, true)
 
-    fun releaseNPVExpandingBoost() = releaseNotificationExpandBoost()
+    fun releaseNPVExpandingBoost() = setShadeBoost(SHADE_REASON_EXPANDING, false)
 
     fun acquireExpansionAnimationBoost() = acquireAnimationBoost()
 

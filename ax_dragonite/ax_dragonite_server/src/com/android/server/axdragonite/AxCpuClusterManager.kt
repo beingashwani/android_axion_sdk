@@ -139,10 +139,10 @@ object AxCpuClusterManager {
                 return ClusterPreset.of(
                     type = ClusterTopologyType.PRESET_TRI_4_3_1,
                     smallMask = littleMask,
-                    bigMask = 0L,
+                    bigMask = c(1),
                     boostMask = allMask and littleMask.inv(),
-                    uiSmall = CORES_UI_4_4,
-                    uiBig = 0,
+                    uiSmall = CORES_UI_LITTLE_DEFAULT,
+                    uiBig = CORES_UI_BIG_DEFAULT,
                     restSmall = CORES_REST_BG_4_4,
                     restBig = 0,
                 )

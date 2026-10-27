@@ -243,7 +243,7 @@ object AxSceneTable {
 
     private fun initSystemUiScenarios() {
         val topo = AxCpuClusterManager.topology
-        val qsHoldTime = if (topo.type == ClusterTopologyType.PRESET_DUAL_6_2) -1L else DURATION_TA_HOLD_MS
+        val qsHoldTime = -1L
         registerScenario(
             Scenario(AxDragoniteConstants.SCENE_QS_PULL_DOWN, SCENE_NAME_QS_PULL_DOWN).apply {
                 command(

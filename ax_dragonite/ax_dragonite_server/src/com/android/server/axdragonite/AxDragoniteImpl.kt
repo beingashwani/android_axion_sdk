@@ -1089,10 +1089,21 @@ class AxDragoniteImpl(context: Context? = null) : IAxDragonite {
         mDragoniteHandler.sendEmptyMessageDelayed(messageId, duration.toLong())
     }
 
+    private fun isShadeSceneActive(): Boolean {
+        val active = currentActiveHandle
+        if (active <= AxDragoniteConstants.INVALID_HANDLE) return false
+        return mSessionRecords.getRecord(active)?.sceneId ==
+            AxDragoniteConstants.SCENE_NOTIFICATION_EXPAND
+    }
+
     override fun sceneBoostAcquire(sceneId: Int, bundle: Bundle?): Int {
         traceBegin("sceneBoostAquire")
         if (AxSceneTable.getScenario(sceneId) == null) {
             Slog.d(TAG, "Scene id: $sceneId is not exist!")
+            traceEnd()
+            return AxDragoniteConstants.INVALID_HANDLE
+        }
+        if (sceneId == AxDragoniteConstants.SCENE_FLING && isShadeSceneActive()) {
             traceEnd()
             return AxDragoniteConstants.INVALID_HANDLE
         }
